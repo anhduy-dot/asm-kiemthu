@@ -88,6 +88,18 @@ public abstract class TestBase
             return;
         }
 
+        // Cho font chu va hinh anh tai xong de anh chup khong bi trong chu (chi o che do chup anh)
+        try
+        {
+            new WebDriverWait(Driver, TimeSpan.FromSeconds(5)).Until(d => (bool)((IJavaScriptExecutor)d).ExecuteScript(
+                "return document.readyState === 'complete' && document.fonts.status === 'loaded'" +
+                " && Array.from(document.images).every(i => i.complete);")!);
+        }
+        catch (WebDriverTimeoutException)
+        {
+            // Het thoi gian cho van chup, khong lam hong ket qua test
+        }
+
         Directory.CreateDirectory(thuMuc);
         var tenTep = Regex.Replace(TestContext.CurrentContext.Test.Name, @"[^A-Za-z0-9_]+", "_").Trim('_');
         var duongDan = Path.Combine(thuMuc, $"{TestContext.CurrentContext.Test.ClassName?.Split('.').Last()}__{tenTep}.png");
