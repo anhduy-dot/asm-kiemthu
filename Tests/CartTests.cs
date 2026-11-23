@@ -10,24 +10,29 @@ public class CartTests : TestBase
 {
     private const string TenBalo = "Sauce Labs Backpack";
 
+    private static readonly By TheSanPham = By.CssSelector("[data-test='inventory-item']");
+    private static readonly By TenSanPham = By.CssSelector("[data-test='inventory-item-name']");
+    private static readonly By GiaSanPham = By.CssSelector("[data-test='inventory-item-price']");
+    private static readonly By BadgeGioHang = By.CssSelector("[data-test='shopping-cart-badge']");
+
     [SetUp]
     public void DangNhapTruocMoiTest()
     {
         // NUnit chay [SetUp] cua TestBase truoc (mo trinh duyet), roi moi toi ham nay
         DangNhap("standard_user", MatKhauHopLe);
         ChoUrlChua("inventory.html");
+        ChoPhanTuHienThi(By.CssSelector("[data-test='inventory-list']"));
     }
 
     [Test]
     public void DanhSachSanPham_Du6SanPham_TenVaGiaHopLe()
     {
-        var cacSanPham = Driver.FindElements(By.CssSelector("[data-test='inventory-item']"));
-        var danhSach = cacSanPham
+        var danhSach = Driver.FindElements(TheSanPham)
             .Select(item => new
             {
                 // Tim phan tu con BEN TRONG tung the san pham
-                Ten = item.FindElement(By.CssSelector("[data-test='inventory-item-name']")).Text,
-                Gia = item.FindElement(By.CssSelector("[data-test='inventory-item-price']")).Text,
+                Ten = item.FindElement(TenSanPham).Text,
+                Gia = item.FindElement(GiaSanPham).Text,
             })
             .ToList();
 
@@ -46,23 +51,25 @@ public class CartTests : TestBase
     public void ThemSanPhamVaoGio_MoGioHang_HienDungSanPham()
     {
         // Ghi lai gia tren trang danh sach de doi chieu voi gio hang
-        var theBalo = Driver.FindElements(By.CssSelector("[data-test='inventory-item']"))
-            .Single(item => item.FindElement(By.CssSelector("[data-test='inventory-item-name']")).Text == TenBalo);
-        var giaTrenDanhSach = theBalo.FindElement(By.CssSelector("[data-test='inventory-item-price']")).Text;
+        var theBalo = Driver.FindElements(TheSanPham)
+            .Single(item => item.FindElement(TenSanPham).Text == TenBalo);
+        var giaTrenDanhSach = theBalo.FindElement(GiaSanPham).Text;
 
         Driver.FindElement(By.CssSelector("[data-test='add-to-cart-sauce-labs-backpack']")).Click();
-        Assert.That(Driver.FindElement(By.CssSelector("[data-test='shopping-cart-badge']")).Text, Is.EqualTo("1"));
+        Assert.That(ChoPhanTuHienThi(BadgeGioHang).Text, Is.EqualTo("1"));
 
         Driver.FindElement(By.CssSelector("[data-test='shopping-cart-link']")).Click();
         ChoUrlChua("cart.html");
+        // URL doi truoc khi trang gio hang ve xong -> cho danh sach gio hang hien thi roi moi doc
+        ChoPhanTuHienThi(By.CssSelector("[data-test='cart-list']"));
 
-        var cacDongTrongGio = Driver.FindElements(By.CssSelector("[data-test='inventory-item']"));
+        var cacDongTrongGio = Driver.FindElements(TheSanPham);
         Assert.Multiple(() =>
         {
             Assert.That(Driver.FindElement(By.CssSelector("[data-test='title']")).Text, Is.EqualTo("Your Cart"));
             Assert.That(cacDongTrongGio, Has.Count.EqualTo(1));
-            Assert.That(cacDongTrongGio[0].FindElement(By.CssSelector("[data-test='inventory-item-name']")).Text, Is.EqualTo(TenBalo));
-            Assert.That(cacDongTrongGio[0].FindElement(By.CssSelector("[data-test='inventory-item-price']")).Text, Is.EqualTo(giaTrenDanhSach));
+            Assert.That(cacDongTrongGio[0].FindElement(TenSanPham).Text, Is.EqualTo(TenBalo));
+            Assert.That(cacDongTrongGio[0].FindElement(GiaSanPham).Text, Is.EqualTo(giaTrenDanhSach));
             Assert.That(cacDongTrongGio[0].FindElement(By.CssSelector("[data-test='item-quantity']")).Text, Is.EqualTo("1"));
         });
     }
@@ -75,9 +82,9 @@ public class CartTests : TestBase
 
         Assert.Multiple(() =>
         {
-            Assert.That(Driver.FindElement(By.CssSelector("[data-test='shopping-cart-badge']")).Text, Is.EqualTo("2"));
-            Assert.That(Driver.FindElement(By.CssSelector("[data-test='remove-sauce-labs-backpack']")).Text, Is.EqualTo("Remove"));
-            Assert.That(Driver.FindElement(By.CssSelector("[data-test='remove-sauce-labs-bike-light']")).Text, Is.EqualTo("Remove"));
+            Assert.That(ChoPhanTuHienThi(BadgeGioHang).Text, Is.EqualTo("2"));
+            Assert.That(ChoPhanTuHienThi(By.CssSelector("[data-test='remove-sauce-labs-backpack']")).Text, Is.EqualTo("Remove"));
+            Assert.That(ChoPhanTuHienThi(By.CssSelector("[data-test='remove-sauce-labs-bike-light']")).Text, Is.EqualTo("Remove"));
         });
     }
 }

@@ -39,10 +39,11 @@ public class LoginTests : TestBase
         DangNhap("standard_user", MatKhauHopLe);
 
         ChoUrlChua("inventory.html");
+        var tieuDe = ChoPhanTuHienThi(By.CssSelector("[data-test='title']"));
         Assert.Multiple(() =>
         {
             Assert.That(Driver.Url, Does.EndWith("/inventory.html"));
-            Assert.That(Driver.FindElement(By.CssSelector("[data-test='title']")).Text, Is.EqualTo("Products"));
+            Assert.That(tieuDe.Text, Is.EqualTo("Products"));
             Assert.That(Driver.FindElements(By.CssSelector("[data-test='inventory-item']")), Has.Count.EqualTo(6));
         });
     }
@@ -54,7 +55,7 @@ public class LoginTests : TestBase
     {
         DangNhap(username, password);
 
-        var thongBaoLoi = Driver.FindElement(By.CssSelector("[data-test='error']"));
+        var thongBaoLoi = ChoPhanTuHienThi(By.CssSelector("[data-test='error']"));
         Assert.Multiple(() =>
         {
             Assert.That(thongBaoLoi.Text, Is.EqualTo(thongBaoMongDoi));
