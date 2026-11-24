@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
@@ -40,6 +41,7 @@ public abstract class TestBase
     [TearDown]
     public void DongTrinhDuyet()
     {
+        ChupAnhTrangCuoiNeuCan();
         Driver?.Quit();
         Driver?.Dispose();
     }
@@ -72,5 +74,36 @@ public abstract class TestBase
             var phanTu = d.FindElement(locator);
             return phanTu.Displayed ? phanTu : null;
         })!;
+    }
+
+    /// <summary>
+    /// Khi dat bien moi truong SCREENSHOT_DIR, luu anh trang web o cuoi moi test
+    /// (lam minh chung trang thai trinh duyet). Khong dat bien -> bo qua.
+    /// </summary>
+    private void ChupAnhTrangCuoiNeuCan()
+    {
+        var thuMuc = Environment.GetEnvironmentVariable("SCREENSHOT_DIR");
+        if (string.IsNullOrWhiteSpace(thuMuc) || Driver is not ITakesScreenshot mayChup)
+        {
+            return;
+        }
+
+        // Cho font chu va hinh anh tai xong de anh chup khong bi trong chu (chi o che do chup anh)
+        try
+        {
+            new WebDriverWait(Driver, TimeSpan.FromSeconds(5)).Until(d => (bool)((IJavaScriptExecutor)d).ExecuteScript(
+                "return document.readyState === 'complete' && document.fonts.status === 'loaded'" +
+                " && Array.from(document.images).every(i => i.complete);")!);
+        }
+        catch (WebDriverTimeoutException)
+        {
+            // Het thoi gian cho van chup, khong lam hong ket qua test
+        }
+
+        Directory.CreateDirectory(thuMuc);
+        var tenTep = Regex.Replace(TestContext.CurrentContext.Test.Name, @"[^A-Za-z0-9_]+", "_").Trim('_');
+        var duongDan = Path.Combine(thuMuc, $"{TestContext.CurrentContext.Test.ClassName?.Split('.').Last()}__{tenTep}.png");
+        mayChup.GetScreenshot().SaveAsFile(duongDan);
+        TestContext.Out.WriteLine($"Da luu anh: {duongDan}");
     }
 }
