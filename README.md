@@ -1,4 +1,4 @@
-# SauceDemoTests — Framework kiểm thử tự động (Selenium + NUnit, .NET 10)
+# asm-kiemthu — Framework kiểm thử tự động (Selenium + NUnit, .NET 10)
 
 Assignment môn **SOF3091 – Kiểm thử nâng cao cùng AI (.NET)**, FPT Polytechnic.
 Đối tượng kiểm thử: <https://www.saucedemo.com/> (trang demo công khai, được phép kiểm thử).
@@ -19,7 +19,7 @@ Assignment môn **SOF3091 – Kiểm thử nâng cao cùng AI (.NET)**, FPT Poly
 ## Cấu trúc thư mục
 
 ```
-SauceDemoTests/
+asm-kiemthu/
 ├── SauceDemoTests.csproj
 ├── Tests/
 │   ├── TestBase.cs        # mở/đóng Chrome, DangNhap(), ChoUrlChua(), ChoPhanTuHienThi()
@@ -40,8 +40,8 @@ SauceDemoTests/
 Yêu cầu: đã cài .NET SDK 10 và Google Chrome.
 
 ```bash
-git clone <link-repo>
-cd SauceDemoTests
+git clone https://github.com/anhduy-dot/asm-kiemthu.git
+cd asm-kiemthu
 dotnet build
 dotnet test
 ```
@@ -101,7 +101,7 @@ Chỉ dùng `id` và `data-test`; không dùng XPath tuyệt đối.
 ## Quy ước commit
 
 Theo Conventional Commits: `feat:`, `build:`, `test:`, `refactor:`, `docs:`.
-Mỗi tính năng làm trên một nhánh `feature/...`, chạy xanh rồi mới merge vào `main`.
+Mỗi tính năng làm trên một nhánh `feature/...`, chạy test xanh rồi mở Pull Request và merge vào `main` trên GitHub (PR #1–#3 ở giai đoạn 1).
 
 ## Nhóm thực hiện
 
